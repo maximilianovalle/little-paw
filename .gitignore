@@ -1,0 +1,14 @@
+build/
+build_*/
+sdkconfig
+sdkconfig.old
+
+build_summary_*.xml
+app_info_*.txt
+size_info_*.txt
+
+pytest_embedded_log/
+
+dependencies.lock
+*.log
+*.o
