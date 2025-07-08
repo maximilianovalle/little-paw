@@ -13,7 +13,7 @@ IoT device built using an ESP32 + AHT20 to track University of Houston's current
 *   Breadboard
 
 <div align="center">
-    <img src="./wiring.png" width="400px"><br />
+    <img src="./configuration.png" width="400px"><br />
 </div>
 
 ## Software Requirements
