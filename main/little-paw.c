@@ -35,8 +35,8 @@ esp_err_t aht20_write_command() {
     i2c_master_start(handle);                                                           // send start condition, start I2C transaction
     i2c_master_write_byte(handle, (AHT20_ADDR << 1) | I2C_MASTER_WRITE, true);          // SEND address byte
     i2c_master_write_byte(handle, 0xAC, true);                                          // 0xAC command (AHT20 datasheet, section 5.4)
-    i2c_master_write_byte(handle, 0x33, true);                                          // first command parameter byte: 0x33
-    i2c_master_write_byte(handle, 0x00, true);                                          // second command parameter byte: 0x00
+    i2c_master_write_byte(handle, 0x33, true);                                          // first command parameter byte: 0x33 (AHT20 datasheet, section 5.4)
+    i2c_master_write_byte(handle, 0x00, true);                                          // second command parameter byte: 0x00 (AHT20 datasheet, section 5.4)
     i2c_master_stop(handle);                                                            // send stop condition, end I2C transaction
     esp_err_t ret = i2c_master_cmd_begin(I2C_MASTER_NUM, handle, pdMS_TO_TICKS(1000));  // execute the above steps
     i2c_cmd_link_delete(handle);                                                        // clean up
