@@ -13,7 +13,7 @@
 #include "esp_http_client.h"
 #include "esp_http_server.h"
 #include "my_data.h"
-#include "IGNORE.h"
+#include "NETWORK.h"
 
 #define I2C_MASTER_NUM I2C_NUM_0                                    // I2C port number, two ESP-IDF defaults: I2C_NUM_0 and I2C_NUM_!
 #define I2C_MASTER_SDA_IO 21                                        // ESP32 SDA GPIO
@@ -134,8 +134,8 @@ void wifi_connection() {
 
     wifi_config_t wifi_configuration = {
         .sta = {
-            .ssid = SSID_NAME,      // IGNORE.h file variable
-            .password = PASSWORD    // IGNORE.h file variable
+            .ssid = SSID_NAME,      // Wifi Network Name, NETWORK.h file variable
+            .password = PASSWORD    // Wifi Password, NETWORK.h file variable
         }
     };
 

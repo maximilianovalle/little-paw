@@ -26,10 +26,13 @@ IoT device built using an ESP32 + AHT20 to track University of Houston's current
 2.  Open the project in VS Code using ESP-IDF
 3.  Set the target: `idf.py set-target esp32`
 4.  Set project configuration: `idf.py menuconfig`
-5.  Build the project: `idf.py all`
-6.  Connect ESP32 and check the serial port: `ls /dev/ttyUSB*`
-7.  Flash the serial port: `idf.py -p /dev/ttyUSB0 flash`
-8.  Monitor the output: `idf.py -p /dev/ttyUSB0 monitor`
+5.  Create a 'NETWORK.h' file formatted as so:  
+        `#define SSID_NAME = "${your network name}"`  
+        `#define PASSWORD = "${your network password}"`
+6.  Build the project: `idf.py all`
+7.  Connect ESP32 and check the serial port: `ls /dev/ttyUSB*`
+8.  Flash the serial port: `idf.py -p /dev/ttyUSB0 flash`
+9.  Monitor the output: `idf.py -p /dev/ttyUSB0 monitor`
 
 ## Acknowledgments
 
