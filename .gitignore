@@ -10,5 +10,6 @@ size_info_*.txt
 pytest_embedded_log/
 
 dependencies.lock
+IGNORE.h
 *.log
 *.o
