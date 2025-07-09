@@ -22,7 +22,7 @@ static esp_event_handler_instance_t ip_event_handler;
 static esp_event_handler_instance_t wifi_event_handler;
 static EventGroupHandle_t s_wifi_event_group = NULL;
 
-// IP Callback Function - runs automatically when something happens
+// IP Callback Function - runs automatically when IP is assigned (i.e. when something happens)
 static void ip_event_cb(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data) {
     ESP_LOGI(TAG, "Handling IP event, event code 0x%" PRIx32, event_id);
 
@@ -48,9 +48,45 @@ static void ip_event_cb(void *arg, esp_event_base_t event_base, int32_t event_id
     }
 }
 
-// WiFi Callback Function - 
+// WiFi Callback Function - runs automatically when WiFi connects, starts, disconnects, etc. (i.e. when something happens)
 static void wifi_event_cb(void *arg, esp_event_base_t event_base, int32t event_id, void *event_date) {
+    ESP_LOGI(TAG, "Handling WiFi event, event code 0x%" PRIx32, event_id);
 
+    switch (event_id) {
+        case WIFI_EVENT_WIFI_READY:
+            ESP_LOGI(TAG, "WiFi ready");
+            break;
+        case WIFI_EVENT_SCAN_DONE:
+            ESP_LOGI(TAG, "WiFi scan done");
+            break;
+        case WIFI_EVENT_STA_START:
+            ESP_LOGI(TAG, "WiFi started, connecting to AP...");
+            esp_wifi_connect();
+            break;
+        case WIFI_EVENT_STA_STOP:
+            ESP_LOGI(TAG, "WiFi stopped");
+            break;
+        case WIFI_EVENT_STA_CONNECTED:
+            ESP_LOGI(TAG, "WiFi connected");
+            break;
+        case WIFI_EVENT_STA_DISCONNECTED:
+            ESP_LOGI(TAG, "WiFi disconnected");
+            if (wifi_retry_count < WIFI_RETRY_ATTEMPT) {
+                ESP_LOGI(TAG, "Retryig to connect to WiFi network...");
+                esp_wifi_connect();
+                wifi_retry_count++;
+            } else {
+                ESP_LOGI(TAG, "Failed to connect to WiFi network.");
+                xEventGroupSetBits(s_wifi_event_group, WIFI_FAIL_BIT);
+            }
+            break;
+        case WIFI_EVENT_STA_AUTHMODE_CHANGE:
+            ESP_LOGI(TAG, "WiFi authmode changed");
+            break;
+        default:
+            ESP_LOGI(TAG, "WiFi event not handled");
+            break;
+    }
 }
 
 // Sets up everything needed before WiFi can work...
