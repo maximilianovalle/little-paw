@@ -12,8 +12,6 @@
 #include "esp_netif.h"
 #include "esp_http_client.h"
 #include "esp_http_server.h"
-#include "my_data.h"
-#include "NETWORK.h"
 
 #define I2C_MASTER_NUM I2C_NUM_0                                    // I2C port number, two ESP-IDF defaults: I2C_NUM_0 and I2C_NUM_!
 #define I2C_MASTER_SDA_IO 21                                        // ESP32 SDA GPIO
@@ -23,6 +21,7 @@
 #define AHT20_CMD_TRIGGER 0xAC                                      // Command: take measurement (AHT20 datasheet, section 5.3)
 #define AHT20_CMD_SOFTRESET 0xBA                                    // Command: reset sensor
 #define AHT20_CMD_INIT 0xBE                                         // Command: initialize sensor (AHT20 datasheet, section 5.3)
+
 
 
 // Initialize I2C
@@ -41,7 +40,6 @@ void i2c_master_init() {
     i2c_driver_install(I2C_MASTER_NUM, conf.mode, 0, 0, 0);         // install I2C driver to ESP32
 }
 
-
 // Write Data to AHT20
 esp_err_t aht20_write_command() {
     i2c_cmd_handle_t handle = i2c_cmd_link_create();                                    // create new I2C transaction
@@ -56,7 +54,6 @@ esp_err_t aht20_write_command() {
     return ret;
 }
 
-
 // Read Data from AHT20
 esp_err_t aht20_read_data(uint8_t *data, size_t length) {
     i2c_cmd_handle_t handle = i2c_cmd_link_create();                                    // create new I2C transaction
@@ -69,7 +66,6 @@ esp_err_t aht20_read_data(uint8_t *data, size_t length) {
     return ret;
 }
 
-
 // Reset + Initialize AHT20
 void aht20_init() {
     aht20_write_command(AHT20_CMD_SOFTRESET);                           // reset AHT20 using "AHT20_CMD_SOFTRESET"
@@ -77,7 +73,6 @@ void aht20_init() {
     aht20_write_command(AHT20_CMD_INIT);                                // initialize AHT20 using "AHT20_CMD_INIT"
     vTaskDelay(pdMS_TO_TICKS(40));                                      // wait after initialization, give AHT20 time to process
 }
-
 
 // Get temperature + humidity
 void aht20_get_temp_humidity(float *tempFahrenheit, float *humidity) {
@@ -99,63 +94,6 @@ void aht20_get_temp_humidity(float *tempFahrenheit, float *humidity) {
 }
 
 
-static void wifi_event_handler(void *event_handler_arg, esp_event_base_t event_base, int32_t event_id, void *event_data) {
-    switch (event_id) {
-        case WIFI_EVENT_STA_START:
-            printf("\nWifi connecting...");
-            break;
-        case WIFI_EVENT_STA_CONNECTED:
-            printf("\nWifi connected...");
-            break;
-        case WIFI_EVENT_STA_DISCONNECTED:
-            printf("\nWifi disconnected...");
-            break;
-        case IP_EVENT_STA_GOT_IP:
-            printf("\nWifi got IP!\n");
-            break;
-        default:
-            break;
-    }
-}
-
-
-// Connect to Wifi
-void wifi_connection() {
-    // 1. WiFi/LwIP Init Phase
-    esp_netif_init();                                                   // s1.1
-    esp_event_loop_create_default();                                    // s1.2
-    esp_netif_create_default_wifi_sta();                                // s1.3
-    wifi_init_config_t wifi_initiation = WIFI_INIT_CONFIG_DEFAULT();
-    esp_wifi_init(&wifi_initiation);                                    // s.14
-
-    // 2. Wifi Configuration Phase
-    esp_event_handler_register(WIFI_EVENT, ESP_EVENT_ANY_ID, wifi_event_handler, NULL);
-    esp_event_handler_register(IP_EVENT, IP_EVENT_STA_GOT_IP, wifi_event_handler, NULL);
-
-    wifi_config_t wifi_configuration = {
-        .sta = {
-            .ssid = SSID_NAME,      // Wifi Network Name, NETWORK.h file variable
-            .password = PASSWORD    // Wifi Password, NETWORK.h file variable
-        }
-    };
-
-    esp_wifi_set_config(ESP_IF_WIFI_STA, &wifi_configuration);
-
-    // 3. WiFi Start Phase
-    esp_wifi_start();
-
-    // 4. WiFi Connect Phase
-    esp_wifi_connect();
-}
-
-// POST
-esp_err_t client_post_handler(esp_http_client_event_handler_t evt) {
-
-}
-
-
-// -----------------------------------------------------------------------------------------
-
 
 void app_main(void) {
     float temperature = 0.0;
@@ -168,5 +106,11 @@ void app_main(void) {
         aht20_get_temp_humidity(&temperature, &humidity);
         printf("\nTemperature: %.2f °F, Humidity: %.2f%%", temperature, humidity);
         vTaskDelay(pdMS_TO_TICKS(2000));
+
+        if (humidity == -1) {
+            printf("\nInvalid, sensor not available...");
+        } else {
+            printf("\nValid...");
+        }
     }
 }

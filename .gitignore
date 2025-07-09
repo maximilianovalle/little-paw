@@ -10,6 +10,5 @@ size_info_*.txt
 pytest_embedded_log/
 
 dependencies.lock
-NETWORK.h
 *.log
 *.o
