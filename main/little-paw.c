@@ -1,17 +1,13 @@
+// Credit
+// - https://developer.espressif.com/blog/getting-started-with-wifi-on-esp-idf/
+// - https://www.espboards.dev/sensors/aht20/#esp-idf
+
 #include <stdio.h>
 #include "driver/i2c.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
-#include <sys/param.h>
-#include "freertos/timers.h"
-#include "freertos/event_groups.h"
-#include "esp_wifi.h"
-#include "esp_log.h"
-#include "nvs_flash.h"
-#include "esp_netif.h"
-#include "esp_http_client.h"
-#include "esp_http_server.h"
+#include "network_.h"
 
 #define I2C_MASTER_NUM I2C_NUM_0                                    // I2C port number, two ESP-IDF defaults: I2C_NUM_0 and I2C_NUM_!
 #define I2C_MASTER_SDA_IO 21                                        // ESP32 SDA GPIO
@@ -84,8 +80,9 @@ void aht20_get_temp_humidity(float *tempFahrenheit, float *humidity) {
         uint32_t raw_humidity = ((data[1] << 16) | (data[2] << 8) | data[3]) >> 4;      // decodes humidity
         uint32_t raw_temperature = ((data[3] & 0x0F) << 16) | (data[4] << 8) | data[5]; // decodes temperature
 
-        *humidity = ((float)raw_humidity / 1048576.0) * 100.0;                          // raw numbers converted to real-world units
-        float tempCelcius = ((float)raw_temperature / 1048576.0) * 200.0 - 50.0;        // ^
+        // raw numbers converted to real-world units
+        *humidity = ((float)raw_humidity / 1048576.0) * 100.0;
+        float tempCelcius = ((float)raw_temperature / 1048576.0) * 200.0 - 50.0;
         *tempFahrenheit = (tempCelcius * 1.8) + 32;
     } else {
         *humidity = -1.0;
