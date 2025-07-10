@@ -141,9 +141,9 @@ void app_main(void) {
         vTaskDelay(pdMS_TO_TICKS(2000));
 
         if (humidity == -1) {
-            printf("\nInvalid, sensor not available...");
+            // Retry measurement
         } else {
-            printf("\nValid...");
+            // Send to backend via HTTP POST request
         }
     }
 }

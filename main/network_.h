@@ -1,4 +1,4 @@
-// network_.h: declares the functions to be shared, think of it as an 'interface' or a 'menu' for network_.c
+// network_.h: declares the functions to be shared, think of it as the 'interface' or 'menu' for network_.c
 
 // Credit: https://developer.espressif.com/blog/getting-started-with-wifi-on-esp-idf/
 
