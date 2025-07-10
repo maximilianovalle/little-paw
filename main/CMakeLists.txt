@@ -1,2 +1,2 @@
-idf_component_register(SRCS "network_.c" "network.h" "little-paw.c"
+idf_component_register(SRCS "little-paw.c" "network_.c" "network_.h"
                     INCLUDE_DIRS ".")
