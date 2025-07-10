@@ -8,6 +8,8 @@
 #include "freertos/task.h"
 
 #include "network_.h"
+#include "esp_log.h"
+#include "esp_wifi.h"
 
 #define I2C_MASTER_NUM I2C_NUM_0                                    // I2C port number, two ESP-IDF defaults: I2C_NUM_0 and I2C_NUM_!
 #define I2C_MASTER_SDA_IO 21                                        // ESP32 SDA GPIO
@@ -17,6 +19,11 @@
 #define AHT20_CMD_TRIGGER 0xAC                                      // Command: take measurement (AHT20 datasheet, section 5.3)
 #define AHT20_CMD_SOFTRESET 0xBA                                    // Command: reset sensor
 #define AHT20_CMD_INIT 0xBE                                         // Command: initialize sensor (AHT20 datasheet, section 5.3)
+
+#define TAG "little-paw"
+
+#define WIFI_SSID "FAKE_SSID"           // TODO: REPLACE + CONCEAL CREDENTIALS
+#define WIFI_PASSWORD "FAKE_PASSWORD"   // TODO: REPLACE + CONCEAL CREDENTIALS
 
 
 
@@ -93,6 +100,35 @@ void aht20_get_temp_humidity(float *tempFahrenheit, float *humidity) {
 
 
 void app_main(void) {
+
+    // WiFi Connection
+
+    ESP_ERROR_INIT(network_init());
+    esp_err_t ret = network_connect(WIFI_SSID, WIFI_PASSWORD);
+
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to connect to WiFi network");
+    }
+
+    wifi_ap_record_t ap_info;
+    ret = esp_wifi_sta_get_ap_info(&ap_info);
+
+    if (ret == ESP_ERR_WIFI_CONN) {
+        ESP_LOGE(TAG, "WiFi station interface not initialized");
+    } else if (ret == ESP_ERR_WIFI_NOT_CONNECT) {
+        ESP_LOGE(TAG, "WiFi station is not connected");
+    } else {
+        ESP_LOGI(TAG, "--- Access Point Information ---");
+        ESP_LOG_BUFFER_HEX("Mac Address: ", ap_info.bssid, sizeof(ap_info.bssid));
+        ESP_LOG_BUFFER_CHAR("SSID: ", ap_info.ssid, sizeof(ap_info.ssid));
+        ESP_LOGI(TAG, "Primary Channel: %d", ap_info.primary);
+        ESP_LOGI(TAG, "RSSI: %d", ap_info.rssi);
+        vTaskDelay(pdMS_TO_TICKS(1000));
+    }
+
+
+    // AHT20 Sensor Data
+
     float temperature = 0.0;
     float humidity = 0.0;
 

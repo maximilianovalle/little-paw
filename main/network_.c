@@ -142,6 +142,7 @@ esp_err_t network_init(void) {
     return ret;
 }
 
+// Connect to WiFi
 esp_err_t network_connect(char *wifi_ssid, char *wifi_password) {
     // Stores SSID + Password in a "Config" structure
     wifi_config_t wifi_config = {
