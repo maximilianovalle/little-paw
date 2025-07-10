@@ -103,7 +103,7 @@ void app_main(void) {
 
     // WiFi Connection
 
-    ESP_ERROR_INIT(network_init());
+    ESP_ERROR_CHECK(network_init());
     esp_err_t ret = network_connect(WIFI_SSID, WIFI_PASSWORD);
 
     if (ret != ESP_OK) {
@@ -119,8 +119,8 @@ void app_main(void) {
         ESP_LOGE(TAG, "WiFi station is not connected");
     } else {
         ESP_LOGI(TAG, "--- Access Point Information ---");
-        ESP_LOG_BUFFER_HEX("Mac Address: ", ap_info.bssid, sizeof(ap_info.bssid));
-        ESP_LOG_BUFFER_CHAR("SSID: ", ap_info.ssid, sizeof(ap_info.ssid));
+        ESP_LOG_BUFFER_HEX("MAC Address", ap_info.bssid, sizeof(ap_info.bssid));
+        ESP_LOG_BUFFER_CHAR("SSID", ap_info.ssid, sizeof(ap_info.ssid));
         ESP_LOGI(TAG, "Primary Channel: %d", ap_info.primary);
         ESP_LOGI(TAG, "RSSI: %d", ap_info.rssi);
         vTaskDelay(pdMS_TO_TICKS(1000));
