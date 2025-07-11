@@ -12,3 +12,5 @@ pytest_embedded_log/
 dependencies.lock
 *.log
 *.o
+
+_credentials.h

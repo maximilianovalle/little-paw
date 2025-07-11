@@ -10,6 +10,7 @@
 #include "network_.h"
 #include "esp_log.h"
 #include "esp_wifi.h"
+#include "_credentials.h"
 
 #define I2C_MASTER_NUM I2C_NUM_0                                    // I2C port number, two ESP-IDF defaults: I2C_NUM_0 and I2C_NUM_!
 #define I2C_MASTER_SDA_IO 21                                        // ESP32 SDA GPIO
@@ -21,9 +22,6 @@
 #define AHT20_CMD_INIT 0xBE                                         // Command: initialize sensor (AHT20 datasheet, section 5.3)
 
 #define TAG "little-paw"
-
-#define WIFI_SSID "FAKE_SSID"           // TODO: REPLACE + CONCEAL CREDENTIALS
-#define WIFI_PASSWORD "FAKE_PASSWORD"   // TODO: REPLACE + CONCEAL CREDENTIALS
 
 
 
@@ -125,7 +123,6 @@ void app_main(void) {
         ESP_LOGI(TAG, "RSSI: %d", ap_info.rssi);
         vTaskDelay(pdMS_TO_TICKS(1000));
     }
-
 
     // AHT20 Sensor Data
 
