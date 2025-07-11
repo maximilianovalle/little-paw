@@ -1,5 +1,5 @@
 # little-paw
-IoT device built using an ESP32 + AHT20 to track University of Houston's current temperature and humidity! Check out the data real-time at [*URL TBA*]!
+IoT device built using an ESP32 + AHT20 to track University of Houston's current temperature and humidity! Check out the data real-time at [Coogcast.com](https://coogcast.com)! **Note:** the data may take a few minutes to display properly due to Coogcast being deployed on free services! If you see "--" instead of true temperature or humidity values, please allow some time for the site to fully render!
 
 <div align="center">
     <img src="./output.gif" height="650px"><br />
