@@ -1,6 +1,7 @@
 // Credit
 // - https://developer.espressif.com/blog/getting-started-with-wifi-on-esp-idf/
 // - https://www.espboards.dev/sensors/aht20/#esp-idf
+// - https://github.com/SIMS-IOT-Devices/FreeRTOS-ESP-IDF-MySQL/blob/main/proj4.c
 
 #include <stdio.h>
 #include "driver/i2c.h"
@@ -11,6 +12,12 @@
 #include "esp_log.h"
 #include "esp_wifi.h"
 #include "_credentials.h"
+
+#include <sys/param.h>
+#include "freertos/timers.h"
+#include "freertos/event_groups.h"
+#include "esp_http_client.h"
+#include "esp_http_server.h"
 
 #define I2C_MASTER_NUM I2C_NUM_0                                    // I2C port number, two ESP-IDF defaults: I2C_NUM_0 and I2C_NUM_!
 #define I2C_MASTER_SDA_IO 21                                        // ESP32 SDA GPIO
@@ -97,6 +104,43 @@ void aht20_get_temp_humidity(float *tempFahrenheit, float *humidity) {
 
 
 
+// Handle POST
+esp_err_t client_post_handler(esp_http_client_event_handle_t evnt) {
+    switch (evnt->event_id) {
+        case HTTP_EVENT_ON_DATA:
+            printf("HTTP_EVENT_ON_DATA: %.*s\n", evnt->data_len, (char *)evnt->data);
+            break; 
+        default:
+            break;
+    }
+
+    return ESP_OK;
+}
+
+// Post to backend
+static void client_post_function(float temp, float humidity) {
+    esp_http_client_config_t config_post = {
+        .url = BACKEND_POST_URL,
+        .method = HTTP_METHOD_POST,
+        .event_handler = client_post_handler
+    };
+
+    esp_http_client_handle_t client_post = esp_http_client_init(&config_post);
+
+    // Format sensor data to JSON
+    char post_data[128];
+    snprintf(post_data, sizeof(post_data), "{\"tempFahrenheit\": %.2f, \"humidityPercentage\": %.2f}", temp, humidity);
+
+    esp_http_client_set_post_field(client_post, post_data, strlen(post_data));
+    esp_http_client_set_header(client_post, "Content-Type", "application/json");
+    esp_http_client_set_header(client_post, "x-device-secret", ESP32_KEY);
+
+    esp_http_client_perform(client_post);
+    esp_http_client_cleanup(client_post);
+}
+
+
+
 void app_main(void) {
 
     // WiFi Connection
@@ -137,10 +181,11 @@ void app_main(void) {
         printf("\nTemperature: %.2f °F, Humidity: %.2f%%", temperature, humidity);
         vTaskDelay(pdMS_TO_TICKS(2000));
 
-        if (humidity == -1) {
-            // Retry measurement
-        } else {
-            // Send to backend via HTTP POST request
-        }
+        // POST to Coogcast
+        // if (humidity != -1) {
+            client_post_function(temperature, humidity);
+        // }
+
+        // vTaskDelay(pdMS_TO_TICKS(3600000 - 2000));   // 1 hour delay between readings, accounting for vTaskDelay(pdMS_TO_TICKS(2000))
     }
 }
