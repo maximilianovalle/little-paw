@@ -18,6 +18,7 @@
 #include "freertos/event_groups.h"
 #include "esp_http_client.h"
 #include "esp_http_server.h"
+#include "ca_cert.c"
 
 #define I2C_MASTER_NUM I2C_NUM_0                                    // I2C port number, two ESP-IDF defaults: I2C_NUM_0 and I2C_NUM_!
 #define I2C_MASTER_SDA_IO 21                                        // ESP32 SDA GPIO
@@ -117,12 +118,13 @@ esp_err_t client_post_handler(esp_http_client_event_handle_t evnt) {
     return ESP_OK;
 }
 
-// Post to backend
+// POST to backend
 static void client_post_function(float temp, float humidity) {
     esp_http_client_config_t config_post = {
         .url = BACKEND_POST_URL,
         .method = HTTP_METHOD_POST,
-        .event_handler = client_post_handler
+        .event_handler = client_post_handler,
+        .cert_pem = (const char *)ca_pem
     };
 
     esp_http_client_handle_t client_post = esp_http_client_init(&config_post);
@@ -182,10 +184,10 @@ void app_main(void) {
         vTaskDelay(pdMS_TO_TICKS(2000));
 
         // POST to Coogcast
-        // if (humidity != -1) {
+        if (humidity != -1) {
             client_post_function(temperature, humidity);
-        // }
+        }
 
-        // vTaskDelay(pdMS_TO_TICKS(3600000 - 2000));   // 1 hour delay between readings, accounting for vTaskDelay(pdMS_TO_TICKS(2000))
+        vTaskDelay(pdMS_TO_TICKS(3600000 - 2000));   // 1 hour delay between readings, accounting for vTaskDelay(pdMS_TO_TICKS(2000))
     }
 }

@@ -14,3 +14,7 @@ dependencies.lock
 *.o
 
 _credentials.h
+ca.pem
+ca_cert.c
+xx00
+xx01
