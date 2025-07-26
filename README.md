@@ -1,35 +1,9 @@
 # little-paw
-IoT device built using an ESP32 + AHT20 to track University of Houston's current temperature and humidity! Check out the data real-time at [Coogcast.com](https://coogcast.com)! **Note:** the data may take a few minutes to display properly due to Coogcast being deployed on free services! If you see "--" instead of true temperature or humidity values, please allow some time for the site to fully render!
+IoT device built using an ESP32 + AHT20 to track University of Houston's current temperature and humidity! Check out the data real-time at [Coogcast.com](https://coogcast.com)!
 
 <div align="center">
     <img src="./output.gif" height="650px"><br />
 </div>
-
-## Hardware Requirements
-
-*   ESP32
-*   AHT20
-*   Jumper wires
-*   Breadboard
-
-<div align="center">
-    <img src="./configuration.png" width="400px"><br />
-</div>
-
-## Software Requirements
-
-*   ESP-IDF
-
-## Building and Installation
-
-1.  Clone the repository: `git clone https://...`
-2.  Open the project in VS Code using ESP-IDF
-3.  Set the target: `idf.py set-target esp32`
-4.  Set project configuration: `idf.py menuconfig`
-6.  Build the project: `idf.py all`
-7.  Connect ESP32 and check the serial port: `ls /dev/ttyUSB*`
-8.  Flash the serial port: `idf.py -p /dev/ttyUSB0 flash`
-9.  Monitor the output: `idf.py -p /dev/ttyUSB0 monitor`
 
 ## Acknowledgments
 
